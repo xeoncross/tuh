@@ -6,8 +6,6 @@
  */
 class tuh 
 {
-	public $tags = 'b|i|em|ul|li|ol|pre|blockquote';
-	
 	public static function parse($t, $d = TRUE)
 	{
 		$t=preg_split('/<code>(.+?)<\/code>/is',$t,-1,2);$c=$s='';foreach($t as$p)if($c=1-$c){if($p=trim($p)){$p=preg_replace(array("/\r/","/\n\n+/"),array('',"\n\n"),$p);$s.=self::text($p,$d);}}else$s.=self::code($p)."\n\n";return$s;
