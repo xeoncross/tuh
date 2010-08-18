@@ -6,6 +6,8 @@
  */
 class tuh 
 {
+	public $tags = 'b|i|em|ul|li|ol|pre|blockquote';
+	
 	public static function parse($t, $d = TRUE)
 	{
 		$t=preg_split('/<code>(.+?)<\/code>/is',$t,-1,2);$c=$s='';foreach($t as$p)if($c=1-$c){if($p=trim($p)){$p=preg_replace(array("/\r/","/\n\n+/"),array('',"\n\n"),$p);$s.=self::text($p,$d);}}else$s.=self::code($p)."\n\n";return$s;
@@ -18,7 +20,7 @@ class tuh
 	
 	public static function text($t, $d = TRUE)
 	{
-		$s='';foreach(explode("\n\n",$t)as$l){if($d)$l=self::link(self::decode(self::decode(self::h($l))));$s.=(preg_match('/^<([a-z][a-z0-9]+)\b[^>]*>.*?<\/\1>$/is',$l)?$l:nl2br("<p>$l</p>"))."\n\n";}return$s;
+		$s='';foreach(explode("\n\n",$t)as$l){$l=self::quote($l);if($d)$l=self::link(self::decode(self::decode(self::h($l))));$s.=(preg_match('/^<([a-z][a-z0-9]+)\b[^>]*>.*?<\/\1>$/is',$l)?$l:nl2br("<p>$l</p>"))."\n\n";}return$s;
 	}
 	
 	public static function decode($t)
@@ -54,5 +56,10 @@ class tuh
 	public static function link($t, $d = TRUE)
 	{
 		return preg_replace('/[a-z]+:\/\/(([a-z0-9-]{1,70}\.){1,4}([a-z]{2,4})(:\d{2,4})?(\/[\w\/.\-?=&;%]{1,200})?)/i', '<a href="$0" '.($d?' rel="nofollow"':'').'>$0</a>',$t);
+	}
+	
+	public static function quote($t)
+	{
+		return preg_replace('/^"([^"]{20,1000})"( +- +[a-z0-9 ]+)?$/i','<blockquote>$1$2</blockquote>',$t);
 	}
 }
