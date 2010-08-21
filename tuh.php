@@ -28,7 +28,7 @@ class tuh
 	 */
 	public static function unparse($t, $d = TRUE)
 	{
-		$t=preg_split('/<code>(.+?)<\/code>/is',$t,-1,2);$c=$s='';foreach($t as$p)if($c=1-$c)$s.=str_replace(array('<p>','</p>','<br />'),array('','',"\n"),($d?tuh::unh($p):$p));else$s.=tuh::uncode($p);return$s;
+		$t=preg_split('/<code>(.+?)<\/code>/is',$t,-1,2);$c=$s='';foreach($t as$p)if($c=1-$c)$s.=str_replace(array('<p>','</p>','<br />'),'',($d?tuh::unh($p):$p));else$s.=tuh::uncode($p);return$s;
 	}
 	
 	/**
