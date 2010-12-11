@@ -28,7 +28,7 @@ class tuh
 	 */
 	public static function unparse($t, $d = TRUE)
 	{
-		$t=preg_split('/<code>(.+?)<\/code>/is',$t,-1,2);$c=$s='';foreach($t as$p)if($c=1-$c)$s.=str_replace(array('<p>','</p>','<br />'),'',($d?tuh::unh($p):$p));else$s.=tuh::uncode($p);return$s;
+		$t=preg_split('/<code>(.+?)<\/code>/is',$t,-1,2);$c=$s='';foreach($t as$p)if($c=1-$c)$s.=tuh::unlink(str_replace(array('<p>','</p>','<br />'),'',($d?tuh::unh($p):$p)));else$s.=tuh::uncode($p);return$s;
 	}
 	
 	/**
@@ -62,7 +62,7 @@ class tuh
 	
 	protected static function text($t, $d = TRUE)
 	{
-		$s='';foreach(explode("\n\n",$t)as$l){$l=tuh::quote(tuh::link($l));if($d)$l=tuh::decode(tuh::h($l));$l=tuh::close($l);$s.=(preg_match('/^<([a-z][a-z0-9]+)\b[^>]*>.*?<\/\1>$/is',$l)?$l:nl2br("<p>$l</p>"))."\n\n";}return$s;
+		$s='';foreach(explode("\n\n",$t)as$l){$l=tuh::quote($l);if($d)$l=tuh::decode(tuh::h($l));$l=tuh::link($l);$l=tuh::close($l);$s.=(preg_match('/^<([a-z][a-z0-9]+)\b[^>]*>.*?<\/\1>$/is',$l)?$l:nl2br("<p>$l</p>"))."\n\n";}return$s;
 	}
 	
 	protected static function decode($t)
@@ -72,7 +72,7 @@ class tuh
 	
 	protected static function uncode($t)
 	{
-		return "<code>\n".tuh::unh(trim(str_replace('&nbsp;',' ',str_ireplace('<br />', "\n",strip_tags($t)))))."\n</code>";
+		return "<code>\n".tuh::unh(trim(str_replace('&nbsp;',' ',str_ireplace('<br />',"\n",strip_tags($t)))))."\n</code>";
 	}
 	
 	protected static function h($t)
@@ -87,12 +87,17 @@ class tuh
 	
 	protected static function link($t, $d = TRUE)
 	{
-		return preg_replace('/\[([a-z]+:\/\/(([a-z0-9-]{1,70}\.){1,4}([a-z]{2,4})(:\d{2,4})?(\/[\w\/.\-?=&;%]{1,200})?))\]/i', '<a href="$1" '.($d?' rel="nofollow"':'').'>$1</a>',$t);
+		return preg_replace('/(^|\s)([a-z]+:\/\/(?:(?:[a-z0-9-]{1,70}\.){1,4}(?:[a-z]{2,4})(?::\d{2,4})?(?:(?:\?|\/)[a-z&%;0-9?=+~_\-\.\/#]*)?))(\s|$)/im','$1<a href="$2" '.($d?' rel="nofollow"':'').'>$2</a>$3',$t);
+	}
+	
+	protected static function unlink($t)
+	{
+		return preg_replace('/<a[^<>]+\b[^\/|\>]*>(.+?)<\/a>/i','$1',$t);
 	}
 	
 	protected static function quote($t)
 	{
-		return preg_replace('/^"([^"]{10,1000})"( *- *[a-z0-9 ]+)?$/i','<blockquote>$1$2</blockquote>',$t);
+		return preg_replace('/^"([^"]{10,1000})"( *- *[a-z0-9 ]+)?$/im','<blockquote>$1$2</blockquote>',$t);
 	}
 	
 }
